@@ -1,7 +1,15 @@
 const express = require('express')
+const morgan = require('morgan')
+
 const app = express()
 
 app.use(express.json())
+
+// const morganLogger = morgan('tiny')
+morgan.token('req-body', (req, res) => JSON.stringify(req.body))
+app.use(morgan(
+  ':method :url :status :res[content-length] :response-time ms :req-body'
+))
 
 let persons = [
   {
@@ -31,7 +39,7 @@ app.get('/api/persons', (request, response) => {
 })
 
 app.get('/info', (request, response) => {
-  response.send(`<p>XPhonebook has info for ${persons.length} people</p>${new Date()}`)
+  response.send(`<p>Phonebook has info for ${persons.length} people</p>${new Date()}`)
 })
 
 app.get('/api/persons/:id', (request, response) => {
@@ -47,7 +55,7 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 app.post('/api/persons', (request, response) => {
-  console.log(request.body)
+  // console.log(request.body)
 
   const id = String(Math.floor(Math.random() * 500))
   const name = request.body.name
@@ -66,7 +74,7 @@ app.post('/api/persons', (request, response) => {
     name: name,
     number: number
   }
-  console.log(person)
+  // console.log(person)
 
   persons = persons.concat(person)
 
