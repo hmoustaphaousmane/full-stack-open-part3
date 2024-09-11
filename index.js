@@ -1,7 +1,9 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 
+const Person = require('./models/person')
 
 const app = express()
 app.use(cors())
@@ -39,7 +41,7 @@ let persons = [
 ]
 
 app.get('/api/persons', (request, response) => {
-  response.json(persons)
+  Person.find({}).then(persons => response.json(persons))
 })
 
 app.get('/info', (request, response) => {
@@ -47,8 +49,7 @@ app.get('/info', (request, response) => {
 })
 
 app.get('/api/persons/:id', (request, response) => {
-  const id = request.params.id
-  response.json(persons.filter(persons => persons.id === id))
+  Person.findById(request.params.id).then(person => response.json(person))
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -59,32 +60,20 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 app.post('/api/persons', (request, response) => {
-  // console.log(request.body)
-
-  const id = String(Math.floor(Math.random() * 500))
   const name = request.body.name
   const number = request.body.number
 
-  const names = persons.map(person => person.name.toLowerCase())
-
-  if (!name || !number)
-    return response.status(400).json({ error: 'name or number missing' })
-
-  if (names.includes(name.toLowerCase()))
-    return response.status(400).json({ error: 'name must be unique' })
-
-  const person = {
-    id: id,
+  const person = new Person({
     name: name,
     number: number
-  }
-  // console.log(person)
+  })
 
-  persons = persons.concat(person)
-
-  response.json(person)
+  person.save().then(savedPerson => {
+    console.log('successfully saved', savedPerson.name, 'to the phonebook')
+    response.json(savedPerson)
+  })
 })
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT)
 console.log(`Server running on port ${PORT}`)
