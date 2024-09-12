@@ -1,8 +1,6 @@
 require('dotenv').config()
 const mongoose = require('mongoose')
 
-const password = process.argv[2]
-
 const uri = process.env.MONGODB_URI
 
 mongoose.set('strictQuery', false)

@@ -35,7 +35,7 @@ if (password && !name && !number) {
     console.log('phonebook:')
     persons.forEach(person => {
       console.log(person.name, person.number)
-    });
+    })
     mongoose.connection.close()
   })
 }
